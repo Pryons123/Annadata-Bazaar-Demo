@@ -359,27 +359,27 @@
 
   const categories = {
     fruits: [
-      {name: "Apple", farmer: "Rajesh Singh", price: "₹80/kg"},
-      {name: "Banana", farmer: "Tropical Co.", price: "₹30/kg"},
-      {name: "Mango", farmer: "Sunshine Orchards", price: "₹100/kg"}
+      {name: "Apple", farmer: "Rajesh Singh", price: "₹80/kg", image: "images/apple.jpg"},
+      {name: "Banana", farmer: "Tropical Co.", price: "₹30/kg", image: " images/banana.jpg"},
+      {name: "Mango", farmer: "Sunshine Orchards", price: "₹100/kg", image "images/Mango.jpg"}
     ],
     meat: [
-      {name: "Chicken", farmer: "Sunny Poultry", price: "₹180/kg"},
-      {name: "Beef", farmer: "Highland Farms", price: "₹400/kg"}
+      {name: "Chicken", farmer: "Sunny Poultry", price: "₹180/kg", image: "images/Chicken.jpg"},
+      {name: "Beef", farmer: "Highland Farms", price: "₹400/kg", image: "images/Beef.jpg"}
     ],
     vegetables: [
-      {name: "Tomatoes", farmer: "Greenfield Farms", price: "₹40/kg"},
-      {name: "Potatoes", farmer: "Sunny Potato Co.", price: "₹25/kg"},
-      {name: "Carrots", farmer: "Hilltop Orchards", price: "₹30/kg"}
+      {name: "Tomatoes", farmer: "Greenfield Farms", price: "₹40/kg", image: "images/Tomatoes.jpg"},
+      {name: "Potatoes", farmer: "Sunny Potato Co.", price: "₹25/kg", image: "images/Potatoes.jpg"},
+      {name: "Carrots", farmer: "Hilltop Orchards", price: "₹30/kg", image: "images/Carrots.jpg"}
     ],
     dairy: [
-      {name: "Milk", farmer: "Dairy Fresh", price: "₹50/litre"},
-      {name: "Cheese", farmer: "Gourmet Dairies", price: "₹600/kg"}
+      {name: "Milk", farmer: "Dairy Fresh", price: "₹50/litre", image: "images/Milk.jpg},
+      {name: "Cheese", farmer: "Gourmet Dairies", price: "₹600/kg", image: "images/Cheese.jpg"}
     ],
     others: [
-      {name: "Honey", farmer: "Manoj Kumar", price: "₹350/kg"},
-      {name: "Spices", farmer: "Rajesh Singh", price: "₹150/kg"},
-      {name: "Handicrafts", farmer: "Sunrise Artisans", price: "₹500/item"}
+      {name: "Honey", farmer: "Manoj Kumar", price: "₹350/kg", image: "images/Honey.jpg"},
+      {name: "Spices", farmer: "Rajesh Singh", price: "₹150/kg", image: "images/Spices.jpg"},
+      {name: "Handicrafts", farmer: "Sunrise Artisans", price: "₹500/item", image: "images/Handicrafts.jpg"}
     ]
   };
   Object.keys(categories).forEach(cat => {
@@ -388,6 +388,7 @@
       const div = document.createElement('div');
       div.className = 'product-item';
       div.innerHTML = `
+        <img src="${item.image}" alt="${item.name}" style="width:100%;border-radius:6px; object-fit:cover;height:150px;">
         <div class="product-name">${item.name}</div>
         <div class="product-farmer">Farmer: ${item.farmer}</div>
         <div class="product-price">${item.price}</div>
