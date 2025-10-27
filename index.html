@@ -15,29 +15,69 @@
     flex-direction: column;
   }
   .hero {
-    position: relative;
-    background-image: url('images/Backround.jpg');
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-    height: 65vh;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    font-size: 3rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    padding: 0 1rem;
-    border-radius: 0 0 70% 70% / 60%;
-    box-shadow: inset 0 0 0 2000px rgba(46, 125, 50, 0.75);
-    margin-bottom: 1.5rem;
-    user-select: none;
-    z-index: 1;
+  position: relative;
+  background-image: url('images/Backround.jpg');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  height: 85vh; /* taller for desktops */
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 3.2rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 0 2rem;
+  border-radius: 0 0 60% 60% / 40%;
+  box-shadow: inset 0 0 0 2000px rgba(46, 125, 50, 0.55); /* lighter overlay */
+  margin-bottom: 2rem;
+  user-select: none;
+  z-index: 1;
+  transition: all 0.3s ease-in-out;
+}
+
+.hero:hover {
+  background-position: center 5%;
+}
+
+.hero span.slogan {
+  font-size: 1.5rem;
+  display: block;
+  margin-top: 1rem;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  opacity: 0.9;
+  position: relative;
+  z-index: 2;
+}
+
+/* Optimize for large screens */
+@media (min-width: 1024px) {
+  .hero {
+    height: 90vh;
+    font-size: 3.5rem;
+    border-radius: 0 0 55% 55% / 35%;
+    padding: 0 4rem;
   }
   .hero span.slogan {
-    font-size: 1.6rem;
+    font-size: 1.8rem;
+  }
+}
+
+/* Optimize for tablets/phones */
+@media (max-width: 767.98px) {
+  .hero {
+    height: 60vh;
+    font-size: 2rem;
+    border-radius: 0 0 70% 70% / 50%;
+  }
+  .hero span.slogan {
+    font-size: 1.2rem;
+  }
+}
     display: block;
     margin-top: 0.75rem;
     font-weight: 400;
@@ -74,10 +114,9 @@
     overflow-y: auto;
   }
 
-  /* Amazon-like grid without images */
   .market-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 1.25rem;
     padding: 0 0.75rem;
   }
