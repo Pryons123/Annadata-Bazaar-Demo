@@ -230,13 +230,20 @@
   tr:hover {
     background-color: #f1f9f1;
   }
+.rating {
+  color: #f1c40f;
+  font-size: 1rem;
+}
+.rating span {
+  color: #ccc;
+}
 </style>
 </head>
 <body>
 
 <div class="hero" role="banner" aria-label="Annadata homepage hero">
   Annadata Bazaar - Fresh Produce, Fair Prices
-  <span class="slogan">Connecting Farmers Directly to Your Doorstep</span>
+  <span class="slogan">Connecting Farmers Directly to Your Doorstep  Note:This is a demo website</span>
 </div>
 
 <div id="menuBtn" role="button" aria-label="Open menu" tabindex="0"><div></div><div></div><div></div></div>
@@ -427,15 +434,24 @@
     const container = document.getElementById(cat + '-list');
     categories[cat].forEach(item => {
       const div = document.createElement('div');
-      div.className = 'product-item';
-      div.innerHTML = `
+div.className = 'product-item';
+
+// Random star rating between 3 and 5
+const rating = Math.floor(Math.random() * 3) + 3; 
+let stars = '';
+for (let i = 0; i < 5; i++) {
+  stars += i < rating ? '★' : '☆';
+}
+
+div.innerHTML = `
   <img src="${item.image}" alt="${item.name}" style="width:100%; border-radius:6px; object-fit:cover; height:150px;">
   <div class="product-name">${item.name}</div>
   <div class="product-farmer">Farmer: ${item.farmer}</div>
   <div class="product-price">${item.price}</div>
+  <div class="rating">${stars}</div>
   <button class="btn-add-cart" onclick="addToCart('${item.name}', '${item.farmer}', '${item.price}', '${item.image}')">Add to Cart</button>
 `;
-      container.appendChild(div);
+container.appendChild(div);
     });
   });
 
