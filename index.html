@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Annadata Marketplace</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#0f0f10;            /* page background (very dark) */
+    --panel:#171717;         /* card/panel background */
+    --panel-2:#1e1e1e;       /* alternate panels */
+    --muted:#bfc8d0;         /* muted text */
+    --text:#e8f0f6;          /* primary text */
+    --accent:#89cffa;        /* accent / buttons (light blue) */
+    --accent-dark:#5aa6d1;   /* hover */
+    --border:#232323;
+    --table-row:#141414;
+    --rating:#f1c40f;
+  }
+
+  html,body{
+    height:100%;
+    background:var(--bg);
+    color:var(--text);
+    margin:0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  /* Layout */
+  body {
+    display:flex;
+    flex-direction:column;
+    min-height:100vh;
+  }
+
+  /* Hero */
+  .hero {
+    position: relative;
+    background-image: url('images/Backround.jpg');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 85vh;
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 3.2rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    padding: 0 2rem;
+    border-radius: 0 0 60% 60% / 40%;
+    /* dark overlay but keep image */
+    box-shadow: inset 0 0 0 2000px rgba(0,0,0,0.55);
+    margin-bottom: 2rem;
+    user-select: none;
+    z-index: 1;
+    transition: all 0.3s ease-in-out;
+  }
+
+  @media (min-width: 1024px) {
+    .hero { height: 90vh; font-size:3.5rem; padding:0 4rem; border-radius:0 0 55% 55% / 35%; }
+  }
+  @media (max-width:767.98px){
+    .hero { height:60vh; font-size:2rem; border-radius:0 0 70% 70% / 50%; }
+  }
+
+  .hero .slogan { font-size:1.4rem; font-weight:400; margin-top:0.8rem; opacity:0.95; color:var(--muted); }
+
+  /* Tabs / panels */
+  #desktopTabs { margin-bottom:1rem; }
+  #desktopTabs .nav-link {
+    font-weight:600;
+    color:var(--accent);
+    background:transparent;
+    border:1px solid transparent;
+  }
+  #desktopTabs .nav-link:hover { background: rgba(255,255,255,0.02); }
+  #desktopTabs .nav-link.active {
+    background:var(--accent);
+    color:#031520;
+    border-radius:6px 6px 0 0;
+    border:none;
+  }
+
+  .tab-content.main {
+    padding:1.5rem;
+    background:var(--panel);
+    border-radius:0 6px 6px 6px;
+    box-shadow: 0 0 18px rgba(0,0,0,0.6);
+    margin-top:-1px;
+    min-height:470px;
+    overflow:auto;
+  }
+
+  /* market grid */
+  .market-grid {
+    display:grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px,1fr));
+    gap:1.25rem;
+    padding:0 0.75rem;
+  }
+
+  .product-item {
+    background:var(--panel-2);
+    border-radius:8px;
+    padding:16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.6);
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    transition: transform .2s ease, box-shadow .2s ease;
+    color:var(--text);
+  }
+  .product-item:hover { transform:translateY(-6px); box-shadow:0 6px 18px rgba(0,0,0,0.7); }
+
+  .product-item img { width:100%; height:150px; object-fit:cover; border-radius:6px; display:block; }
+
+  .product-name { font-weight:700; font-size:1.05rem; color:var(--text); }
+  .product-farmer { font-style:italic; color:var(--muted); }
+  .product-price { color:var(--accent); font-weight:700; font-size:1rem; }
+
+  .btn-add-cart {
+    align-self:start;
+    padding:.35rem .8rem;
+    font-size:.9rem;
+    border-radius:5px;
+    border:1px solid var(--accent);
+    background:transparent;
+    color:var(--accent);
+    cursor:pointer;
+    transition: background .15s ease, color .15s ease;
+  }
+  .btn-add-cart:hover { background:var(--accent); color:#031520; }
+
+  /* Category background tints (subtle) */
+  #fruits-list .product-item { background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00)); }
+  #meat-list .product-item { background: linear-gradient(180deg, rgba(0,0,0,0.02), rgba(255,255,255,0)); }
+  #vegetables-list .product-item { background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.02)); }
+  #dairy-list .product-item { background: var(--panel-2); }
+  #others-list .product-item { background: var(--panel-2); }
+
+  /* Cart */
+  #cart-items { margin-top:10px; }
+  .cart-item {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:10px 0; border-bottom:1px solid var(--border);
+    gap:8px;
+  }
+  .cart-item img { width:60px; height:60px; object-fit:cover; border-radius:6px; margin-right:8px; vertical-align:middle; }
+  .cart-item > div { flex:1; color:var(--muted); }
+
+  .cart-qty { width:60px; background:#151515; color:var(--text); border:1px solid #2b2b2b; padding:4px; border-radius:4px; }
+
+  .btn-buy-all {
+    margin-top:15px; padding:10px 20px; background:var(--accent); color:#031520;
+    font-weight:700; border:none; border-radius:6px; cursor:pointer;
+  }
+  .btn-buy-all:hover { background:var(--accent-dark); }
+
+  /* mobile menu hamburger */
+  #menuBtn { position:fixed; top:15px; right:15px; width:40px; height:30px; display:none; flex-direction:column; justify-content:space-between; z-index:1060; cursor:pointer; }
+  #menuBtn div { height:4px; border-radius:3px; background:var(--accent); }
+  #marketSlide {
+    position:fixed; top:0; right:-280px; width:280px; height:100%; background:var(--accent); padding-top:60px;
+    display:flex; flex-direction:column; transition:right .28s ease; z-index:1050;
+  }
+  #marketSlide.active { right:0; }
+  #marketSlide button { border:none; background:transparent; color:#021216; padding:14px 20px; font-weight:700; text-align:left; cursor:pointer; border-bottom:1px solid rgba(0,0,0,0.08); }
+  #marketSlide button:hover { background: rgba(0,0,0,0.06); }
+
+  @media(max-width:767.98px){
+    #menuBtn { display:flex; }
+    #desktopTabs { display:none !important; }
+  }
+
+  /* footer */
+  footer {
+    margin-top:auto; background:transparent; color:var(--muted); text-align:center; padding:1rem; font-weight:600;
+  }
+
+  /* tables */
+  table { width:100%; border-collapse:collapse; color:var(--muted); }
+  th,td { padding:.75rem 1rem; border:1px solid var(--border); }
+  th { background:var(--panel-2); color:var(--text); text-align:left; }
+  tr:hover { background:rgba(255,255,255,0.01); }
+
+  /* forms */
+  .form-control, .form-control-file, .btn {
+    background:#121212; color:var(--text); border:1px solid #2a2a2a;
+  }
+  .form-control::placeholder { color: #6e6e6e; }
+  .text-success { color:#7ed078 !important; }
+
+  /* small utilities */
+  .mt-3 { margin-top:1rem; }
+  .mb-3 { margin-bottom:1rem; }
+  .market-heading { margin-bottom:1rem; color:var(--text); }
+
+  .rating { color: var(--rating); font-size:1rem; }
+  .rating span { color:var(--muted); font-size:.9rem; margin-left:.35rem; }
+
+</style>
+</head>
+<body>
+
+<div class="hero" role="banner" aria-label="Annadata homepage hero">
+  Annadata Bazaar - Fresh Produce, Fair Prices
+  <span class="slogan">Note:This is a demo website</span>
+</div>
+
+<!-- mobile menu hamburger -->
+<div id="menuBtn" role="button" aria-label="Open menu" tabindex="0"><div></div><div></div><div></div></div>
+
+<!-- slide menu -->
+<div id="marketSlide" aria-label="Mobile menu navigation">
+  <button data-target="market">Market</button>
+  <button data-target="cart">Cart</button>
+  <button data-target="sell">Sell</button>
+  <button data-target="accounts">Accounts</button>
+  <button data-target="price-stats">Price Stats</button>
+  <button data-target="about">About Us</button>
+  <button data-target="policy">Privacy & Refund Policy</button>
+</div>
+
+<div class="container flex-grow-1 d-flex flex-column" role="main" style="padding-bottom:1.5rem;">
+  <!-- Desktop tabs -->
+  <ul class="nav nav-tabs" id="desktopTabs" role="tablist" aria-label="Main navigation tabs">
+    <li class="nav-item"><a class="nav-link active" id="market-tab" data-toggle="tab" href="#market" role="tab" aria-controls="market" aria-selected="true">Market</a></li>
+    <li class="nav-item"><a class="nav-link" id="cart-tab" data-toggle="tab" href="#cart" role="tab" aria-controls="cart" aria-selected="false">Cart</a></li>
+    <li class="nav-item"><a class="nav-link" id="accounts-tab" data-toggle="tab" href="#accounts" role="tab" aria-controls="accounts" aria-selected="false">Accounts</a></li>
+    <li class="nav-item"><a class="nav-link" id="sell-tab" data-toggle="tab" href="#sell" role="tab" aria-controls="sell" aria-selected="false">Sell</a></li>
+    <li class="nav-item"><a class="nav-link" id="price-stats-tab" data-toggle="tab" href="#price-stats" role="tab" aria-controls="price-stats" aria-selected="false">Price Stats</a></li>
+    <li class="nav-item"><a class="nav-link" id="about-tab" data-toggle="tab" href="#about" role="tab" aria-controls="about" aria-selected="false">About Us</a></li>
+    <li class="nav-item"><a class="nav-link" id="policy-tab" data-toggle="tab" href="#policy" role="tab" aria-controls="policy" aria-selected="false">Privacy & Refund Policy</a></li>
+  </ul>
+
+  <div class="tab-content main" id="mainTabContent">
+    <!-- Market tab -->
+    <div class="tab-pane fade show active" id="market" role="tabpanel" aria-labelledby="market-tab">
+      <h2 class="market-heading">Market Categories</h2>
+
+      <ul class="nav nav-pills mb-3" id="marketSubTab" role="tablist">
+        <li class="nav-item"><a class="nav-link active" id="fruits-tab" data-toggle="pill" href="#fruits" role="tab" aria-controls="fruits" aria-selected="true">Fruits</a></li>
+        <li class="nav-item"><a class="nav-link" id="meat-tab" data-toggle="pill" href="#meat" role="tab" aria-controls="meat" aria-selected="false">Meat</a></li>
+        <li class="nav-item"><a class="nav-link" id="vegetables-tab" data-toggle="pill" href="#vegetables" role="tab" aria-controls="vegetables" aria-selected="false">Vegetables</a></li>
+        <li class="nav-item"><a class="nav-link" id="dairy-tab" data-toggle="pill" href="#dairy" role="tab" aria-controls="dairy" aria-selected="false">Dairy Products</a></li>
+        <li class="nav-item"><a class="nav-link" id="others-tab" data-toggle="pill" href="#others" role="tab" aria-controls="others" aria-selected="false">Others</a></li>
+      </ul>
+
+      <div class="tab-content" id="marketSubTabContent">
+        <div class="tab-pane fade show active" id="fruits" role="tabpanel" aria-labelledby="fruits-tab"><div id="fruits-list" class="market-grid"></div></div>
+        <div class="tab-pane fade" id="meat" role="tabpanel" aria-labelledby="meat-tab"><div id="meat-list" class="market-grid"></div></div>
+        <div class="tab-pane fade" id="vegetables" role="tabpanel" aria-labelledby="vegetables-tab"><div id="vegetables-list" class="market-grid"></div></div>
+        <div class="tab-pane fade" id="dairy" role="tabpanel" aria-labelledby="dairy-tab"><div id="dairy-list" class="market-grid"></div></div>
+        <div class="tab-pane fade" id="others" role="tabpanel" aria-labelledby="others-tab"><div id="others-list" class="market-grid"></div></div>
+      </div>
+    </div>
+
+    <!-- Cart tab -->
+    <div class="tab-pane fade" id="cart" role="tabpanel" aria-labelledby="cart-tab" style="padding:1rem;">
+      <h2>Your Cart</h2>
+      <div id="cart-items"></div>
+      <button class="btn-buy-all" onclick="buyAll()">Buy All Items</button>
+    </div>
+
+    <!-- Accounts tab -->
+    <div class="tab-pane fade" id="accounts" role="tabpanel" aria-labelledby="accounts-tab">
+      <h2>Accounts</h2>
+      <ul class="nav nav-pills mb-3" id="accountSubTab" role="tablist">
+        <li class="nav-item"><a class="nav-link active" id="farmer-account-tab" data-toggle="pill" href="#farmer-account" role="tab" aria-controls="farmer-account" aria-selected="true">Farmer</a></li>
+        <li class="nav-item"><a class="nav-link" id="consumer-account-tab" data-toggle="pill" href="#consumer-account" role="tab" aria-controls="consumer-account" aria-selected="false">Consumer</a></li>
+      </ul>
+      <div class="tab-content" id="accountSubTabContent">
+        <div class="tab-pane fade show active" id="farmer-account" role="tabpanel" aria-labelledby="farmer-account-tab">
+          <form id="farmer-signup-form">
+            <div class="form-group"><label for="farmer-username">Username</label><input type="text" id="farmer-username" class="form-control" required></div>
+            <div class="form-group"><label for="farmer-email">Email</label><input type="email" id="farmer-email" class="form-control" required></div>
+            <div class="form-group"><label for="farmer-password">Password</label><input type="password" id="farmer-password" class="form-control" required></div>
+            <div class="form-group"><label for="farm-name">Farm Name</label><input type="text" id="farm-name" class="form-control" required></div>
+            <div class="form-group"><label for="farm-location">Farm Location</label><input type="text" id="farm-location" class="form-control" required></div>
+            <button type="submit" class="btn btn-primary btn-block" style="background:var(--accent); border:none; color:#021216;">Create Farmer Account</button>
+            <div class="mt-3 text-success" id="farmer-account-msg"></div>
+          </form>
+        </div>
+        <div class="tab-pane fade" id="consumer-account" role="tabpanel" aria-labelledby="consumer-account-tab">
+          <form id="consumer-signup-form">
+            <div class="form-group"><label for="consumer-username">Username</label><input type="text" id="consumer-username" class="form-control" required></div>
+            <div class="form-group"><label for="consumer-email">Email</label><input type="email" id="consumer-email" class="form-control" required></div>
+            <div class="form-group"><label for="consumer-password">Password</label><input type="password" id="consumer-password" class="form-control" required></div>
+            <button type="submit" class="btn btn-primary btn-block" style="background:var(--accent); border:none; color:#021216;">Create Consumer Account</button>
+            <div class="mt-3 text-success" id="consumer-account-msg"></div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sell tab -->
+    <div class="tab-pane fade" id="sell" role="tabpanel" aria-labelledby="sell-tab">
+      <h2>Sell Your Products</h2>
+      <form id="sell-produce-form">
+        <div class="form-group"><label for="sell-product-name">Product Name</label><input type="text" id="sell-product-name" class="form-control" required></div>
+        <div class="form-group"><label for="sell-farmer-name">Farmer Name</label><input type="text" id="sell-farmer-name" class="form-control" required value="Rajesh Singh"></div>
+        <div class="form-group"><label for="sell-price">Price Per Unit (₹)</label><input type="number" id="sell-price" class="form-control" required min="0"></div>
+        <div class="form-group"><label for="sell-image">Product Image (compulsory)</label><input type="file" id="sell-image" class="form-control-file" accept="image/*"></div>
+        <img id="crop-image-preview" alt="Product Image Preview" style="max-width:200px; display:none; margin-bottom: 10px; border-radius:6px;" />
+        <button type="submit" class="btn btn-success btn-block" style="background:var(--accent); border:none; color:#021216;">Upload Product</button>
+        <div class="mt-3 text-success" id="sell-produce-msg"></div>
+      </form>
+    </div>
+
+    <!-- Price stats -->
+    <div class="tab-pane fade" id="price-stats" role="tabpanel" aria-labelledby="price-stats-tab">
+      <h2>Market Price Statistics</h2>
+      <p style="color:var(--muted);">Check average market prices below to compare with current listings.</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Category</th>
+            <th>Average Market Price (₹ per unit)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Apple</td><td>Fruits</td><td>75</td></tr>
+          <tr><td>Banana</td><td>Fruits</td><td>28</td></tr>
+          <tr><td>Mango</td><td>Fruits</td><td>95</td></tr>
+          <tr><td>Chicken</td><td>Meat</td><td>185</td></tr>
+          <tr><td>Beef</td><td>Meat</td><td>420</td></tr>
+          <tr><td>Tomatoes</td><td>Vegetables</td><td>38</td></tr>
+          <tr><td>Potatoes</td><td>Vegetables</td><td>23</td></tr>
+          <tr><td>Carrots</td><td>Vegetables</td><td>28</td></tr>
+          <tr><td>Milk</td><td>Dairy</td><td>52</td></tr>
+          <tr><td>Cheese</td><td>Dairy</td><td>630</td></tr>
+          <tr><td>Honey</td><td>Others</td><td>340</td></tr>
+          <tr><td>Spices</td><td>Others</td><td>140</td></tr>
+          <tr><td>Handicrafts</td><td>Others</td><td>480</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- About -->
+    <div class="tab-pane fade" id="about" role="tabpanel" aria-labelledby="about-tab">
+      <h2>About Us</h2>
+      <p style="color:var(--muted);">Our platform connects farmers with direct markets, ensuring they earn reasonable and fair prices for their crops. We believe in supporting the backbone of the agricultural industry by offering a trusted and transparent space for transactions. Join us and make a meaningful difference in the agriculture economy.</p>
+    </div>
+
+    <!-- Policy -->
+    <div class="tab-pane fade" id="policy" role="tabpanel" aria-labelledby="policy-tab">
+      <h2>Privacy & Refund Policy</h2>
+      <p style="color:var(--muted);">We collect and use your data solely to facilitate transactions and improve our platform. Your information is kept private and secure.</p>
+      <p style="color:var(--muted);">All sales are final unless the product is misrepresented. Contact farmers directly to resolve issues.</p>
+      <p style="color:var(--muted);">Payments are handled directly between buyers and farmers — we facilitate communication only.</p>
+    </div>
+  </div>
+</div>
+
+<footer>&copy; 2025 Annadata Bazaar</footer>
+
+<!-- scripts -->
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
+
+<script>
+  // Mobile menu toggle
+  const menuBtn = document.getElementById('menuBtn');
+  const mobileMenu = document.getElementById('marketSlide');
+  if(menuBtn){
+    menuBtn.addEventListener('click', () => { mobileMenu.classList.toggle('active'); });
+  }
+
+  // Slide menu navigation hooking into tabs
+  mobileMenu.querySelectorAll('button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.getAttribute('data-target');
+      // desktop tabs: toggle active class for nav-links
+      document.querySelectorAll('#desktopTabs .nav-link').forEach(t => {
+        t.classList.toggle('active', t.id === target + '-tab');
+      });
+      // show the right tab pane
+      document.querySelectorAll('.tab-pane').forEach(pane => {
+        pane.classList.toggle('active', pane.id === target);
+        pane.classList.toggle('show', pane.id === target);
+      });
+      mobileMenu.classList.remove('active');
+    });
+  });
+
+  // Data: categories (kept same as original, with image paths)
+  const categories = {
+    fruits: [
+      {name: "Apple", farmer: "Rajesh Singh", price: "₹150/kg", image: "images/apple.jpg"},
+      {name: "Banana", farmer: "Tropical Co.", price: "₹50/kg", image: "images/banana.jpg"},
+      {name: "Mango", farmer: "Sunshine Orchards", price: "₹50/kg", image: "images/Mango.jpg"}
+    ],
+    meat: [
+      {name: "Chicken", farmer: "Sunny Poultry", price: "₹250/kg", image: "images/Chicken.jpg"},
+      {name: "Beef", farmer: "Highland Farms", price: "₹400/kg", image: "images/Beef.jpg"}
+    ],
+    vegetables: [
+      {name: "Tomatoes", farmer: "Greenfield Farms", price: "₹40/kg", image: "images/Tomatoes.jpg"},
+      {name: "Potatoes", farmer: "Sunny Potato Co.", price: "₹30/kg", image: "images/Potatoes.jpg"},
+      {name: "Carrots", farmer: "Hilltop Orchards", price: "₹80/kg", image: "images/Carrot.jpg"}
+    ],
+    dairy: [
+      {name: "Milk", farmer: "Dairy Fresh", price: "₹70/litre", image: "images/Milk.jpg"},
+      {name: "Cheese", farmer: "Gourmet Dairies", price: "₹600/kg", image: "images/Cheese.jpg"}
+    ],
+    others: [
+      {name: "Honey", farmer: "Manoj Kumar", price: "₹350/kg", image: "images/Honey.jpg"},
+      {name: "Spices", farmer: "Rajesh Singh", price: "₹150/kg", image: "images/Spices.jpg"},
+      {name: "Handicrafts", farmer: "Sunrise Artisans", price: "₹500/item", image: "images/Handicrafts.jpg"}
+    ]
+  };
+
+  // Populate product grids (original behavior preserved)
+  Object.keys(categories).forEach(cat => {
+    const container = document.getElementById(cat + '-list');
+    if(!container) return;
+    categories[cat].forEach(item => {
+      const div = document.createElement('div');
+      div.className = 'product-item';
+
+      // Random star rating between 3 and 5 (kept as before)
+      const rating = Math.floor(Math.random() * 3) + 3;
+      let stars = '';
+      for (let i = 0; i < 5; i++) stars += i < rating ? '★' : '☆';
+
+      div.innerHTML = `
+        <img src="${item.image}" alt="${item.name}">
+        <div class="product-name">${item.name}</div>
+        <div class="product-farmer">Farmer: ${item.farmer}</div>
+        <div class="product-price">${item.price}</div>
+        <div class="rating">${stars}</div>
+        <button class="btn-add-cart" onclick="addToCart('${item.name.replace(/'/g,"\\'")}', '${item.farmer.replace(/'/g,"\\'")}', '${item.price}', '${item.image}')">Add to Cart</button>
+      `;
+      container.appendChild(div);
+    });
+  });
+
+  // Cart functionality (same API & behavior)
+  let cart = [];
+
+  function addToCart(name, farmer, price, image) {
+    const existing = cart.find(item => item.name === name);
+    if (existing) existing.qty++;
+    else cart.push({name, farmer, price, image, qty:1});
+    renderCart();
+    // show cart tab using bootstrap jQuery if available
+    try { $('#cart-tab').tab('show'); } catch(e){}
+  }
+
+  function removeFromCart(name) {
+    cart = cart.filter(item => item.name !== name);
+    renderCart();
+  }
+
+  function updateQty(name, qty) {
+    const item = cart.find(i => i.name === name);
+    if (item) item.qty = parseInt(qty) || 1;
+    renderCart();
+  }
+
+  function renderCart() {
+    const container = document.getElementById('cart-items');
+    container.innerHTML = '';
+    if (cart.length === 0) {
+      container.innerHTML = '<p style="color:var(--muted)">Your cart is empty.</p>';
+      return;
+    }
+    cart.forEach(item => {
+      const div = document.createElement('div');
+      div.className = 'cart-item';
+      div.innerHTML = `
+        <div style="display:flex; align-items:center; flex:1;">
+          <img src="${item.image}" alt="${item.name}">
+          <div>
+            <b style="color:var(--text)">${item.name}</b><br>
+            <small style="color:var(--muted)">Farmer: ${item.farmer}</small>
+          </div>
+        </div>
+        <div>
+          <input type='number' class='cart-qty' min='1' value='${item.qty}' onchange='updateQty("${item.name.replace(/"/g,'&quot;')}", this.value)'>
+        </div>
+        <div style="min-width:80px; color:var(--muted)">${item.price}</div>
+        <div><button class="btn btn-danger btn-sm" style="background:#b93b3b; border:none; color:#fff;" onclick='removeFromCart("${item.name.replace(/"/g,'&quot;')}")'>Remove</button></div>
+      `;
+      container.appendChild(div);
+    });
+  }
+
+  function buyAll() {
+    if(cart.length === 0){
+      alert('Cart is empty!');
+    } else {
+      alert('Account required to purchase!');
+    }
+  }
+
+  // SELL form image preview + basic form handling (keeps original structure)
+  const sellImageInput = document.getElementById('sell-image');
+  const cropPreview = document.getElementById('crop-image-preview');
+  if(sellImageInput){
+    sellImageInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if(!file) { cropPreview.style.display='none'; return; }
+      const reader = new FileReader();
+      reader.onload = function(evt){ cropPreview.src = evt.target.result; cropPreview.style.display='block'; };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // Farmer/consumer create account forms - show simple message (kept minimal)
+  document.getElementById('farmer-signup-form')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    document.getElementById('farmer-account-msg').textContent = 'Farmer account created (demo).';
+  });
+  document.getElementById('consumer-signup-form')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    document.getElementById('consumer-account-msg').textContent = 'Consumer account created (demo).';
+  });
+
+  // Sell produce form
+  document.getElementById('sell-produce-form')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const name = document.getElementById('sell-product-name').value;
+    const farmer = document.getElementById('sell-farmer-name').value;
+    const price = document.getElementById('sell-price').value;
+    // push to "others" by default (demo)
+    categories.others.push({name, farmer, price: '₹' + price, image: cropPreview.src || 'images/Handicrafts.jpg'});
+    // refresh product lists: clear and repopulate
+    ['fruits','meat','vegetables','dairy','others'].forEach(cat=>{
+      const container = document.getElementById(cat + '-list');
+      if(container) container.innerHTML = '';
+    });
+    // re-render products
+    Object.keys(categories).forEach(cat => {
+      const container = document.getElementById(cat + '-list');
+      if(!container) return;
+      categories[cat].forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'product-item';
+        const rating = Math.floor(Math.random() * 3) + 3;
+        let stars = '';
+        for (let i = 0; i < 5; i++) stars += i < rating ? '★' : '☆';
+        div.innerHTML = `
+          <img src="${item.image}" alt="${item.name}">
+          <div class="product-name">${item.name}</div>
+          <div class="product-farmer">Farmer: ${item.farmer}</div>
+          <div class="product-price">${item.price}</div>
+          <div class="rating">${stars}</div>
+          <button class="btn-add-cart" onclick="addToCart('${item.name.replace(/'/g,"\\'")}', '${item.farmer.replace(/'/g,"\\'")}', '${item.price}', '${item.image}')">Add to Cart</button>
+        `;
+        container.appendChild(div);
+      });
+    });
+    document.getElementById('sell-produce-msg').textContent = 'Product uploaded (demo).';
+    e.target.reset();
+    cropPreview.style.display='none';
+  });
+
+  // initial render of product grids (if any created earlier were cleared)
+  // (we already populated above, but in case form re-populated or script ran earlier)
+  function ensureInitialRendered(){
+    Object.keys(categories).forEach(cat=>{
+      const container = document.getElementById(cat + '-list');
+      if(!container) return;
+      if(container.children.length === 0){
+        categories[cat].forEach(item=>{
+          const div = document.createElement('div');
+          div.className = 'product-item';
+          const rating = Math.floor(Math.random() * 3) + 3;
+          let stars = '';
+          for (let i = 0; i < 5; i++) stars += i < rating ? '★' : '☆';
+          div.innerHTML = `
+            <img src="${item.image}" alt="${item.name}">
+            <div class="product-name">${item.name}</div>
+            <div class="product-farmer">Farmer: ${item.farmer}</div>
+            <div class="product-price">${item.price}</div>
+            <div class="rating">${stars}</div>
+            <button class="btn-add-cart" onclick="addToCart('${item.name.replace(/'/g,"\\'")}', '${item.farmer.replace(/'/g,"\\'")}', '${item.price}', '${item.image}')">Add to Cart</button>
+          `;
+          container.appendChild(div);
+        });
+      }
+    });
+  }
+  ensureInitialRendered();
+
+  // make mobile slide buttons open correct tab when clicked in menu (they use data-target)
+  document.querySelectorAll('#marketSlide button[data-target]').forEach(b => {
+    b.addEventListener('click', function(){
+      const target = this.getAttribute('data-target');
+      // find nav-link with id = target+'-tab' if it exists and trigger click
+      const navlink = document.getElementById(target + '-tab');
+      if(navlink) navlink.click();
+    });
+  });
+</script>
+
+</body>
+</html>
